@@ -248,14 +248,6 @@ window.onload = function() {
         isFool = false;
         isHanabi = false;
         switch (monthDay) {
-        case 101:
-            var wx = (screen_unitX - calcUnit(wall[0].width)) / 2;
-            var wy = (screen_unitY - calcUnit(wall[0].height)) / 2;
-            cc.drawImage(wall[0],
-                         wx, wy,
-                         calcUnit(wall[0].width), calcUnit(wall[0].height)
-                        );
-            break;
         case 124:
             if (guestNum != 0) {
                 guestNum = 0;
@@ -263,31 +255,6 @@ window.onload = function() {
                 sgy = 0;
                 gy = (UNIT - guest[guestNum].height - 20) / 2;
                 dgx = -3;
-            }
-            break;
-        case 214:
-            var wx = (screen_unitX - calcUnit(wall[1].width)) / 2 +
-                calcUnitX(20);
-            var wy = screen_unitY - calcUnit(wall[1].height) - calcUnitY(20);
-            cc.drawImage(wall[1],
-                         wx, wy,
-                         calcUnit(wall[1].width), calcUnit(wall[1].height)
-                        );
-            break;
-        case 303:
-            var mag = 1.5;
-            var wx = (screen_unitX - calcUnit(wall[2].width * mag)) / 2;
-            var wy = screen_unitY - calcUnit(wall[2].height * mag) -
-                calcUnitY(20);
-            cc.drawImage(wall[2],
-                         wx, wy,
-                         calcUnit(wall[2].width * mag),
-                         calcUnit(wall[2].height * mag)
-                        );
-            break;
-        case 401:
-            if (DD.getHours() < 12) { // エイプリルフールは午前中だけ
-                isFool = true;
             }
             break;
         case 412: // チビ黒
@@ -299,14 +266,6 @@ window.onload = function() {
                 dgx = -2;
             }
             break;
-        case 426:
-            var wx = (screen_unitX - calcUnit(wall[3].width)) / 2;
-            var wy = (screen_unitY - calcUnit(wall[3].height)) / 2;
-            cc.drawImage(wall[3],
-                         wx, wy,
-                         calcUnit(wall[3].width), calcUnit(wall[3].height)
-                        );
-            break;
         case 505:
             if (guestNum != 1) {
                 guestNum = 1;
@@ -315,6 +274,80 @@ window.onload = function() {
                 gy = (UNIT - guest[guestNum].height - 20) / 2;
                 dgx = -2;
             }
+            break;
+        case 707:
+            if (guestNum != 2) {
+                guestNum = 2;
+                sgx = gx = UNIT;
+                sgy = 0;
+                gy = 5;
+                dgx = -3;
+            }
+            break;
+        case 724:
+            if (guestNum != 3) {
+                guestNum = 3;
+                sgx = gx = UNIT;
+                sgy = 0;
+                gy = (UNIT - guest[guestNum].height - 20) / 5;
+                dgx = -3;
+            }
+            break;
+        case 815:
+            if (DD.getHours() > 18 &&
+                DD.getHours() < 21) {
+                isHanabi = true;
+            }
+            break;
+        case 1103:
+            if (guestNum != 5) {
+                guestNum = 5;
+                sgx = gx = UNIT;
+                sgy = 0;
+                gy = (UNIT - guest[guestNum].height - 20) / 2;
+                dgx = -1;
+            }
+            break;
+        case 1112:
+            if (guestNum != 4) {
+                guestNum = 4;
+                sgx = gx = UNIT;
+                sgy = -1;
+                gy = Math.random() *
+                    (UNIT - guest[guestNum].height - 20);
+                dgx = -1;
+            }
+            break;
+            defult:
+            guestNum = -1;
+            isChibi = false;
+        }
+
+        switch (monthDay) {
+        case 101:
+            var wx = (screen_unitX - calcUnit(wall[0].width)) / 2;
+            var wy = (screen_unitY - calcUnit(wall[0].height)) / 2;
+            cc.drawImage(wall[0],
+                         wx, wy,
+                         calcUnit(wall[0].width), calcUnit(wall[0].height)
+                        );
+            break;
+        case 214:
+            var wx = (screen_unitX - calcUnit(wall[1].width)) / 2 +
+                calcUnitX(20);
+            var wy = screen_unitY - calcUnit(wall[1].height) - calcUnitY(20);
+            cc.drawImage(wall[1],
+                         wx, wy,
+                         calcUnit(wall[1].width), calcUnit(wall[1].height)
+                        );
+            break;
+        case 426:
+            var wx = (screen_unitX - calcUnit(wall[3].width)) / 2;
+            var wy = (screen_unitY - calcUnit(wall[3].height)) / 2;
+            cc.drawImage(wall[3],
+                         wx, wy,
+                         calcUnit(wall[3].width), calcUnit(wall[3].height)
+                        );
             break;
         case 510:
             var wx = (screen_unitX - calcUnit(wall[4].width)) * 3 / 4;
@@ -339,24 +372,6 @@ window.onload = function() {
                          wx, wy,
                          calcUnit(wall[6].width), calcUnit(wall[6].height)
                         );
-
-            if (guestNum != 2) {
-                guestNum = 2;
-                sgx = gx = UNIT;
-                sgy = 0;
-                gy = 5;
-                dgx = -3;
-            }
-
-            break;
-        case 724:
-            if (guestNum != 3) {
-                guestNum = 3;
-                sgx = gx = UNIT;
-                sgy = 0;
-                gy = (UNIT - guest[guestNum].height - 20) / 5;
-                dgx = -3;
-            }
             break;
         case 806:
             var wx = (screen_unitX - calcUnit(wall[7].width)) / 2;
@@ -400,25 +415,6 @@ window.onload = function() {
                          calcUnit(wall[10].height * mag)
                         );
             break;
-        case 1103:
-            if (guestNum != 5) {
-                guestNum = 5;
-                sgx = gx = UNIT;
-                sgy = 0;
-                gy = (UNIT - guest[guestNum].height - 20) / 2;
-                dgx = -1;
-            }
-            break;
-        case 1112:
-            if (guestNum != 4) {
-                guestNum = 4;
-                sgx = gx = UNIT;
-                sgy = -1;
-                gy = Math.random() *
-                    (UNIT - guest[guestNum].height - 20);
-                dgx = -1;
-            }
-            break;
         case 1225:
             var mag = 0.8;
             var wx = (screen_unitX - calcUnit(wall[11].width)) - calcUnitX(5);
@@ -432,8 +428,7 @@ window.onload = function() {
             isXmas = true;
             break;
         }
-
-                  /*
+        /*
         if((i = rand(100)) < 10) { // 100回に 10回雪ダルマ
             switch(month) {
             case 2:
