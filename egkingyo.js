@@ -293,12 +293,6 @@ window.onload = function() {
                 dgx = -3;
             }
             break;
-        case 815:
-            if (DD.getHours() > 18 &&
-                DD.getHours() < 21) {
-                isHanabi = true;
-            }
-            break;
         case 1103:
             if (guestNum != 5) {
                 guestNum = 5;
