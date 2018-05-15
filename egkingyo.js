@@ -794,7 +794,7 @@ function chimeMove() {
         }
     }
     else {
-        if(medakaNum != 2) {
+        if (medakaNum != 2) {
             cc.drawImage(medaka[medakaNum],
                          calcUnitX(mx), calcUnitY(my),
                          calcUnit(medaka[medakaNum].width),
@@ -1137,7 +1137,7 @@ function eatfood() {
     var disY;
     if ((disY = foody[targetFood] - fy) > 0) { // 下にある時
         if (disY > 30) { // 遠い時は急いで潜る
-            dy = 2;
+            dy = 4;
         }
         else if (disY > 5) {
             dy = 1;
@@ -1148,7 +1148,7 @@ function eatfood() {
     }
     else { // 上にある時
         if (disY > 30) { // 遠い時は急いで浮上!
-            dy = -2;
+            dy = -4;
         }
         else if (disY < -5) {
             dy = -1;
