@@ -37,7 +37,7 @@ var LastMonthDay;
 var AboutSeed;
 
 var today = new Date();
-var monthDay = (today.getMonth() + 1) * 100 + today.getDate();
+var monthDay;
 
 var num = new Array(10);
 var coron = new Image();
@@ -91,6 +91,30 @@ var isHanabi = false;
 var hanabi;
 var hanabiCt = 0;
 //initData();
+
+var Pos = function(x, dx, y, dy) {
+    this.x = x;
+    this.dx = dx;
+    this.y = y;
+    this.dy = dy;
+    this.time = 0;
+    this.move = function() {
+        this.x += this.dx;
+        this.y += this.dy;
+        this.time++;
+    };
+};
+
+var SMOKEMAX = 256;
+var BLUEMAX = 6;
+var smoke = new Array(BLUEMAX);
+for (i = 0; i < BLUEMAX; i++) {
+    smoke[i] = new Array(SMOKEMAX);
+}
+
+var isBlue = false;
+var blueS;
+var bluePos = new Array(BLUEMAX);
 
 
 /**
@@ -240,9 +264,9 @@ window.onload = function() {
         // 壁紙の描画
         month = DD.getMonth() + 1;
         day = DD.getDate();
-        var monthDay = month * 100 + day;
+        monthDay = month * 100 + day;
 
-        //monthDay = 412; // for deBug
+        //monthDay = 1103; // for deBug
         forceBlack = false;
         isXmas = false;
         isFool = false;
@@ -293,7 +317,7 @@ window.onload = function() {
                 dgx = -3;
             }
             break;
-        case 1103:
+        /*case 1103:
             if (guestNum != 5) {
                 guestNum = 5;
                 sgx = gx = UNIT;
@@ -301,7 +325,7 @@ window.onload = function() {
                 gy = (UNIT - guest[guestNum].height - 20) / 2;
                 dgx = -1;
             }
-            break;
+            break;*/
         case 1112:
             if (guestNum != 4) {
                 guestNum = 4;
@@ -312,7 +336,7 @@ window.onload = function() {
                 dgx = -1;
             }
             break;
-            defult:
+        default:
             guestNum = -1;
             isChibi = false;
         }
@@ -542,15 +566,15 @@ window.onload = function() {
         }
 
         // 正時処理
-//        if (parseInt(DD.getMinutes()) == 0) {
-        if (parseInt(DD.getSeconds()) == 0) {
+        if (parseInt(DD.getSeconds()) == 0 && !isMedaka) {
             if (chimeON != parseInt(DD.getMinutes()) &&
-                Math.floor(Math.random() * 30) == 1) {
+                (Math.floor(Math.random() * 30) == 1 || monthDay == 1103)) {
                 chimeON = parseInt(DD.getMinutes());
                 initChime();
                 isMedaka = true;
             }
-/*            else if (chimeON != parseInt(DD.getMinutes())) { // deBug
+
+/*        if (chimeON != parseInt(DD.getMinutes())) { // deBug
                 chimeON = parseInt(DD.getMinutes());
                 initChime();
                 isMedaka = true;
@@ -727,56 +751,71 @@ window.onload = function() {
 };
 
 function initChime() {
-    switch (Math.floor(Math.random() * 4)) {
-    //switch (3) { // deBug
-    case 0: // メダカ
-        medakaNum = 0;
-        mx = UNIT;
-        my = 120;
-        mdy = 0;
-        mdx = -5;
-        mddx = 1;
-        mddxd = -5;
-        mddy = 1;
-        mddyd = 0;
-        break;
-    case 1: // イエローサブマリン
-        medakaNum = 1;
-        mx = -medaka[medakaNum].width;
-        my = 50;
-        mdy = 0;
-        mdx = 1;
-        mddx = 1;
-        mddxd = 1;
-        mddy = 3;
-        mddyd = -1;
-        break;
-    case 2: // モアイ
-        medakaNum = 2;
-        mx = UNIT;
-        my = UNIT - medaka[medakaNum].height - 20;
-        mdy = 0;
-        mdx = -1;
-        mddx = 1;
-        mddxd = -1;
-        mddy = 0;
-        mddyd = 0;
-        break;
-    case 3: // タケぼうず
-        isBozu = true;
-        bozuCt = 0;
-        mx = UNIT;
-        my = (UNIT - 20 - bozu[0].height) / 2;
-        mdy = 0;
-        mdx = -1;
-        mddx = 1;
-        mddxd = -1;
-        mddy = 0;
-        mddyd = 0;
-        break;
+    if (monthDay == 1103) { // ブルーインパルス
+        bluePos[0] = new Pos(-blueS.width, 3, 90, 0);
+        bluePos[1] = new Pos(-blueS.width * 2, 3, 50, 0);
+        bluePos[2] = new Pos(-blueS.width * 2, 3, 130, 0);
+        bluePos[3] = new Pos(-blueS.width * 3, 3, 90, 0);
+        bluePos[4] = new Pos(-blueS.width * 3, 3, 10, 0);
+        bluePos[5] = new Pos(-blueS.width * 3, 3, 170, 0);
+        for (j = 0; j < BLUEMAX; j++) {
+            for (i = 0; i < SMOKEMAX; i++) {
+                smoke[j][i] = new Pos(i * UNIT / SMOKEMAX, 0,
+                                      bluePos[j].y + (blueS.height * 0.55), 0);
+            }
+        }
+        isBlue = true;
+    }
+    else {
+        switch (Math.floor(Math.random() * 5)) {
+        case 0: // メダカ
+            medakaNum = 0;
+            mx = UNIT;
+            my = 120;
+            mdy = 0;
+            mdx = -5;
+            mddx = 1;
+            mddxd = -5;
+            mddy = 1;
+            mddyd = 0;
+            break;
+        case 1: // イエローサブマリン
+            medakaNum = 1;
+            mx = -medaka[medakaNum].width;
+            my = 50;
+            mdy = 0;
+            mdx = 1;
+            mddx = 1;
+            mddxd = 1;
+            mddy = 3;
+            mddyd = -1;
+            break;
+        case 2: // モアイ
+            medakaNum = 2;
+            mx = UNIT;
+            my = UNIT - medaka[medakaNum].height - 20;
+            mdy = 0;
+            mdx = -1;
+            mddx = 1;
+            mddxd = -1;
+            mddy = 0;
+            mddyd = 0;
+            break;
+        case 3: // タケぼうず
+            isBozu = true;
+            bozuCt = 0;
+            mx = UNIT;
+            my = (UNIT - 20 - bozu[0].height) / 2;
+            mdy = 0;
+            mdx = -1;
+            mddx = 1;
+            mddxd = -1;
+            mddy = 0;
+            mddyd = 0;
+            break;
+        }
     }
 }
-
 
 function chimeMove() {
     if (isBozu) {
@@ -790,6 +829,49 @@ function chimeMove() {
         bozuCt %= BOZUMAX;
         if (calcUnitX(mx) < -calcUnit(bozu[0].width)) {
             isBozu = false;
+            isMedaka = false;
+        }
+    }
+    else if (isBlue) {
+        for (b = 0; b < BLUEMAX; b++) {
+            cc.drawImage(blueS,
+                         calcUnitX(bluePos[b].x), calcUnitY(bluePos[b].y),
+                         calcUnit(blueS.width), calcUnit(blueS.height));
+            var SMOKE_ALPHA = 128; // 小さい程早く消える
+            if (b != 0) { // 1号機はスモークひかない!
+                for (i = 0; i < SMOKEMAX; i++) {
+                    if (smoke[b][i].x < bluePos[b].x) {
+                        var a = 1.0 -
+                            smoke[b][i].time / SMOKE_ALPHA +
+                            Math.random() / 10.0;
+                        if (a < 0.0) {
+                            a = 0.0;
+                        }
+                        cc.globalAlpha = a;
+                        cc.fillStyle = 'rgb(255, 255, 255)';
+                        cc.beginPath();
+                        cc.arc(calcUnitX(smoke[b][i].x),
+                               calcUnitY(smoke[b][i].y),
+                               calcUnit((smoke[b][i].time +
+                                         (Math.random() * 6 - 3)) / 10) +
+                               1,
+                               0,
+                               Math.PI * 2, false);
+                        cc.fill();
+                        cc.globalAlpha = 1.0;
+                        smoke[b][i].move();
+                        //smoke[i].y += (Math.random() / 2.0 - 0.25);
+                        // smoke[b][i].y += (Math.random() - 0.5);
+                        smoke[b][i].y += (Math.random() * 5.0 - 2.5);
+                    }
+                }
+            }
+            bluePos[b].move();
+        }
+        a = SMOKEMAX - 1;
+        b = BLUEMAX - 1;
+        if (smoke[b][a].time / SMOKE_ALPHA > 1.0) {
+            isBlue = false;
             isMedaka = false;
         }
     }
@@ -863,6 +945,9 @@ function loadMedaka() {
 
     hanabi = new Image();
     hanabi.src = './res/hanabi.png';
+
+    blueS = new Image();
+    blueS.src = './res/blueS.png';
 }
 
 
