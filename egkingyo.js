@@ -117,6 +117,10 @@ var blueS;
 var bluePos = new Array(BLUEMAX);
 
 
+var KSMOKEMAX = 16;
+var ksmoke = new Array(KSMOKEMAX);
+
+
 /**
 * @return {null}
 */
@@ -567,19 +571,20 @@ window.onload = function() {
 
         // 正時処理
         if (parseInt(DD.getSeconds()) == 0 && !isMedaka) {
+/*
             if (chimeON != parseInt(DD.getMinutes()) &&
                 (Math.floor(Math.random() * 30) == 1 || monthDay == 1103)) {
                 chimeON = parseInt(DD.getMinutes());
                 initChime();
                 isMedaka = true;
             }
-
-/*        if (chimeON != parseInt(DD.getMinutes())) { // deBug
+*/
+/**/        if (chimeON != parseInt(DD.getMinutes())) { // deBug
                 chimeON = parseInt(DD.getMinutes());
                 initChime();
                 isMedaka = true;
             }
-*/
+/**/
         }
         else {
             chimeON = parseInt(DD.getMinutes());
@@ -767,7 +772,8 @@ function initChime() {
         isBlue = true;
     }
     else {
-        switch (Math.floor(Math.random() * 5)) {
+        //switch (Math.floor(Math.random() * 5)) {
+        switch (4) {
         case 0: // メダカ
             medakaNum = 0;
             mx = UNIT;
@@ -813,6 +819,21 @@ function initChime() {
             mddy = 0;
             mddyd = 0;
             break;
+        case 4: // コマジェ
+            medakaNum = 3;
+            mx = -medaka[medakaNum].width;
+            my = UNIT - medaka[medakaNum].height - 20;
+            mdy = 0;
+            mdx = 1;
+            mddx = 0;
+            mddxd = 5;
+            mddy = 0;
+            mddyd = 0;
+            for (i = 0; i < KSMOKEMAX; i++) {
+                ksmoke[i] = new Pos(i * UNIT / KSMOKEMAX, 0,
+                                      UNIT - 22, -1);
+            }
+            break;
         }
     }
 }
@@ -837,7 +858,7 @@ function chimeMove() {
             cc.drawImage(blueS,
                          calcUnitX(bluePos[b].x), calcUnitY(bluePos[b].y),
                          calcUnit(blueS.width), calcUnit(blueS.height));
-            var SMOKE_ALPHA = 128; // 小さい程早く消える
+            var SMOKE_ALPHA = 96; // 小さい程早く消える
             if (b != 0) { // 1号機はスモークひかない!
                 for (i = 0; i < SMOKEMAX; i++) {
                     if (smoke[b][i].x < bluePos[b].x) {
@@ -876,14 +897,14 @@ function chimeMove() {
         }
     }
     else {
-        if (medakaNum != 2) {
+        if (medakaNum != 2 && medakaNum != 3) { // モアイ，コマジェ以外
             cc.drawImage(medaka[medakaNum],
                          calcUnitX(mx), calcUnitY(my),
                          calcUnit(medaka[medakaNum].width),
                          calcUnit(medaka[medakaNum].height)
                         );
         }
-        else {
+        else { // モアイ，コマジェは地面
             cc.drawImage(medaka[medakaNum],
                          calcUnitX(mx),
                          screen_unitY - calcUnit(medaka[medakaNum].height) -
@@ -896,7 +917,41 @@ function chimeMove() {
         mdy = Math.floor((Math.random() * mddy)) + mddyd;
         mx += mdx;
         my += mdy;
-        if (calcUnitX(mx) < -calcUnitX(medaka[medakaNum].width) ||
+        if (medakaNum == 3) { // コマジェ スモーク処理
+            var SMOKE_ALPHA = 64; // 小さい程早く消える
+            for (i = 0; i < KSMOKEMAX; i++) {
+                if (ksmoke[i].x < mx) {
+                    var a = 1.0 -
+                        ksmoke[i].time / SMOKE_ALPHA +
+                        Math.random() / 10.0;
+                    if (a < 0.0) {
+                        a = 0.0;
+                    }
+                    cc.globalAlpha = a;
+                    cc.fillStyle = 'rgb(255, 255, 255)';
+                    cc.beginPath();
+                    cc.arc(calcUnitX(ksmoke[i].x),
+                           calcUnitY(ksmoke[i].y),
+                           calcUnit(
+                               Math.max(0,
+                                        (ksmoke[i].time +
+                                         (Math.random() * 6 - 3))
+                                        ) / 1.5) + 1,
+                           0,
+                           Math.PI * 2, false);
+                    cc.fill();
+                    cc.globalAlpha = 1.0;
+                    ksmoke[i].move();
+                    ksmoke[i].y += (Math.random() * 6.0 - 4.0) -
+                        ksmoke[i].time / 20.0;
+                }
+            }
+            a = KSMOKEMAX - 1;
+            if (ksmoke[a].time / SMOKE_ALPHA > 1.0) {
+                isMedaka = false;
+            }
+        }
+        else if (calcUnitX(mx) < -calcUnitX(medaka[medakaNum].width) ||
             calcUnitX(mx) > screen_unitX + calcUnitX(medaka[medakaNum].width)) {
             isMedaka = false;
         }
@@ -927,13 +982,14 @@ function initData() {
 }
 
 function loadMedaka() {
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < 4; i++) {
         medaka[i] = new Image();
     }
     var i = 0;
     medaka[i++].src = './res/medaka.png';
     medaka[i++].src = './res/submarine.png';
     medaka[i++].src = './res/moai.png';
+    medaka[i++].src = './res/komaje.png';
 
     for (i = 0; i < BOZUMAX; i++) {
         bozu[i] = new Image();
