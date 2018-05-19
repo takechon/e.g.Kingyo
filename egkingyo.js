@@ -521,7 +521,8 @@ window.onload = function() {
             //guestImage.setXY(gx, gy);
             gx += dgx;
             if (calcUnitX(gx) < -calcUnit(guest[guestNum].width) ||
-                calcUnitX(gx) > screen_unitX + calcUnit(guest[guestNum].width)) {
+                calcUnitX(gx) > screen_unitX +
+                calcUnit(guest[guestNum].width)) {
                 gx = sgx;
                 if (sgy < 0) {
                     gy = Math.random() * (UNIT - guest[guestNum].height - 20);
@@ -571,20 +572,20 @@ window.onload = function() {
 
         // 正時処理
         if (parseInt(DD.getSeconds()) == 0 && !isMedaka) {
-/*
+/**/
             if (chimeON != parseInt(DD.getMinutes()) &&
                 (Math.floor(Math.random() * 30) == 1 || monthDay == 1103)) {
                 chimeON = parseInt(DD.getMinutes());
                 initChime();
                 isMedaka = true;
             }
-*/
-/**/        if (chimeON != parseInt(DD.getMinutes())) { // deBug
+/**/
+/*        if (chimeON != parseInt(DD.getMinutes())) { // deBug
                 chimeON = parseInt(DD.getMinutes());
                 initChime();
                 isMedaka = true;
             }
-/**/
+*/
         }
         else {
             chimeON = parseInt(DD.getMinutes());
@@ -772,8 +773,8 @@ function initChime() {
         isBlue = true;
     }
     else {
-        //switch (Math.floor(Math.random() * 5)) {
-        switch (4) {
+        switch (Math.floor(Math.random() * 5)) {
+        //switch (4) { // debug
         case 0: // メダカ
             medakaNum = 0;
             mx = UNIT;
