@@ -67,7 +67,8 @@ var dgx;
 
 var chimeON = -1;
 var isMedaka = false;
-var medaka = new Array(3);
+var MEDAKAMAX = 5;
+var medaka = new Array(MEDAKAMAX);
 var medakaNum;
 
 var isBozu = false;
@@ -773,8 +774,8 @@ function initChime() {
         isBlue = true;
     }
     else {
-        switch (Math.floor(Math.random() * 5)) {
-        //switch (4) { // debug
+        switch (Math.floor(Math.random() * 6)) {
+        //switch (5) { // debug
         case 0: // メダカ
             medakaNum = 0;
             mx = UNIT;
@@ -835,6 +836,21 @@ function initChime() {
                                       UNIT - 22, -1);
             }
             break;
+        case 5: // ベスパ
+            medakaNum = 4;
+            mx = -medaka[medakaNum].width;
+            my = UNIT - medaka[medakaNum].height - 20;
+            mdy = 0;
+            mdx = 1;
+            mddx = 0;
+            mddxd = 2;
+            mddy = 0;
+            mddyd = 0;
+            for (i = 0; i < KSMOKEMAX; i++) {
+                ksmoke[i] = new Pos(i * UNIT / KSMOKEMAX, 0,
+                                      UNIT - 22, -1);
+            }
+            break;
         }
     }
 }
@@ -874,9 +890,11 @@ function chimeMove() {
                         cc.beginPath();
                         cc.arc(calcUnitX(smoke[b][i].x),
                                calcUnitY(smoke[b][i].y),
-                               calcUnit((smoke[b][i].time +
-                                         (Math.random() * 6 - 3)) / 10) +
-                               1,
+                               calcUnit(
+                                   Math.max(1,
+                                            (smoke[b][i].time +
+                                             (Math.random() * 6 - 3)) / 10)
+                               ),
                                0,
                                Math.PI * 2, false);
                         cc.fill();
@@ -898,7 +916,7 @@ function chimeMove() {
         }
     }
     else {
-        if (medakaNum != 2 && medakaNum != 3) { // モアイ，コマジェ以外
+        if (medakaNum != 2 && medakaNum != 3 && medakaNum != 4) { // モアイ，コマジェ以外
             cc.drawImage(medaka[medakaNum],
                          calcUnitX(mx), calcUnitY(my),
                          calcUnit(medaka[medakaNum].width),
@@ -918,7 +936,7 @@ function chimeMove() {
         mdy = Math.floor((Math.random() * mddy)) + mddyd;
         mx += mdx;
         my += mdy;
-        if (medakaNum == 3) { // コマジェ スモーク処理
+        if (medakaNum == 3 || medakaNum == 4) { // コマジェ スモーク処理
             var SMOKE_ALPHA = 64; // 小さい程早く消える
             for (i = 0; i < KSMOKEMAX; i++) {
                 if (ksmoke[i].x < mx) {
@@ -983,7 +1001,7 @@ function initData() {
 }
 
 function loadMedaka() {
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < MEDAKAMAX; i++) {
         medaka[i] = new Image();
     }
     var i = 0;
@@ -991,6 +1009,7 @@ function loadMedaka() {
     medaka[i++].src = './res/submarine.png';
     medaka[i++].src = './res/moai.png';
     medaka[i++].src = './res/komaje.png';
+    medaka[i++].src = './res/vespa.png';
 
     for (i = 0; i < BOZUMAX; i++) {
         bozu[i] = new Image();
