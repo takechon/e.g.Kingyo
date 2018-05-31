@@ -81,7 +81,6 @@ var mddx, mddy;
 var mddxd, mddyd;
 
 var moon;
-var fullMoonDay;
 var isMoon = false;
 var nowMoon;
 var moonS;
@@ -230,11 +229,14 @@ window.onload = function() {
             h = 86400 - h;
         }
 
-        fullMoonDay = (((22113 - (11 * DD.getFullYear()) -
-                         DD.getMonth() + 1) % 30) + 30) % 30;
-        //fullMoonDay = 3; // deBug
-        if ((DD.getDate() == fullMoonDay && DD.getHours() >= 17) ||
-            (DD.getDate() - 1 == fullMoonDay && DD.getHours() < 8)) {
+        moonAge = (((DD.getFullYear() - 2009) % 19) * 11 +
+                   (DD.getMonth() + 1) + DD.getDate()) % 30;
+        if (DD.getMonth() == 1 || DD.getMonth() == 2) {
+            moonAge += 2;
+            moonAge %= 30;
+        }
+        if (moonAge == 14 && DD.getHours() >= 17) ||
+            moonAge == 15 && DD.getHours() < 8)) {
             isMoon = true;
             moonW = screen_unit * 0.35;
             moonH = screen_unit * 0.35;
