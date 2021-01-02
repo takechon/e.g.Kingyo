@@ -235,8 +235,7 @@ window.onload = function() {
             moonAge += 2;
             moonAge %= 30;
         }
-        if ((moonAge == 14 && DD.getHours() >= 17) ||
-            (moonAge == 15 && DD.getHours() < 8)) {
+        if (moonAge >= 13 || monnAge <= 15) {
             isMoon = true;
             moonW = screen_unit * 0.35;
             moonH = screen_unit * 0.35;
