@@ -233,8 +233,7 @@ window.onload = function() {
         fullMoonDay = (((22113 - (11 * DD.getFullYear()) -
                          DD.getMonth() + 1) % 30) + 30) % 30;
         //fullMoonDay = 3; // deBug
-        if ((DD.getDate() == fullMoonDay && DD.getHours() >= 17) ||
-            (DD.getDate() - 1 == fullMoonDay && DD.getHours() < 8)) {
+        if ((DD.getDate() >= fullMoonDay - 1) && (DD.getDate() <= fullMoonDay + 1)) {
             isMoon = true;
             moonW = screen_unit * 0.35;
             moonH = screen_unit * 0.35;
