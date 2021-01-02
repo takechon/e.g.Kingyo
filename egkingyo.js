@@ -80,7 +80,7 @@ var mdx, mdy;
 var mddx, mddy;
 var mddxd, mddyd;
 
-var moon;
+var moon = new Array(30);
 var isMoon = false;
 var nowMoon;
 var moonS;
@@ -235,7 +235,7 @@ window.onload = function() {
             moonAge += 2;
             moonAge %= 30;
         }
-        if (moonAge >= 13 || monnAge <= 15) {
+        if (DD.getHours() >= 17 || DD.getHours() < 8) {
             isMoon = true;
             moonW = screen_unit * 0.35;
             moonH = screen_unit * 0.35;
@@ -479,7 +479,7 @@ window.onload = function() {
             cc.translate(x, y);
             //cc.rotate(rot * Math.PI / 180);
             cc.rotate(rot);
-            cc.drawImage(moon,
+            cc.drawImage(moon[moonAge],
                          xd, yd,
                          moonW, moonH
                         );
@@ -1017,8 +1017,18 @@ function loadMedaka() {
         bozu[i].src = './res/b' + i + '.png';
     }
 
-    moon = new Image();
-    moon.src = './res/moon.png';
+    for (i = 0; i < 30; i++) {
+        moon[i] = new Image();
+        if (i == 15) {
+            moon[i].src = './res/moon.png';
+        }
+        else if (i < 10) {
+            moon[i].src = './res/m0' + i + '.png';
+        }
+        else {
+            moon[i].src = './res/m' + i + '.png';
+        }
+    }
 
     hanabi = new Image();
     hanabi.src = './res/hanabi.png';
