@@ -240,7 +240,7 @@ window.onload = function() {
             moonW = screen_unit * 0.35;
             moonH = screen_unit * 0.35;
             nowMin = DD.getHours() * 60 + DD.getMinutes();
-            moonS = 1080; // 月の出 18 時(unit: 分)
+            moonS = ((moonAge * 1440 + nowMin) / 30) + 360; // 月の出 (unit: 分)
             nowMoon = nowMin - moonS; // 月の出から何分?
             if (nowMoon < 0) {
                 nowMoon += 1440; // 24時間
