@@ -245,9 +245,11 @@ window.onload = function() {
             if (nowMoon < 0) {
                 nowMoon += 1440; // 24時間
             }
+            nowMoon = 360; // for deBug
         }
         else {
             isMoon = false;
+            isMoon = true; // always show Moon
         }
 
         // 水
@@ -476,6 +478,7 @@ window.onload = function() {
             xd = moonW * -0.5;
             yd = moonH * -0.5;
 
+            //cc.globalAlpha = 0.1; // test
             cc.translate(x, y);
             //cc.rotate(rot * Math.PI / 180);
             cc.rotate(rot);
