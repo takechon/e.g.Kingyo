@@ -86,6 +86,7 @@ var nowMoon;
 var moonS;
 var moonW;
 var moonH;
+var moonAlpha;
 
 var isHanabi = false;
 var hanabi;
@@ -225,8 +226,14 @@ window.onload = function() {
         DD = new Date();
         h2 = DD.getHours() * 3600 + DD.getMinutes() * 60 + DD.getSeconds();
         h = h2;
-        if (h > 43200) {
+        if (h > 43200) { // 正午で絶対値
             h = 86400 - h;
+        }
+        if (h > 21600) { // 6〜18時で正午を最低値 0.1 にする
+            moonAlpha = (-0.9 * (h - 21600)) / 21600 + 1.0;
+        }
+        else {
+            moonAlpha = 1.0;
         }
 
         moonAge = (((DD.getFullYear() - 2009) % 19) * 11 +
@@ -245,7 +252,6 @@ window.onload = function() {
             if (nowMoon < 0) {
                 nowMoon += 1440; // 24時間
             }
-            nowMoon = 360; // for deBug
         }
         else {
             isMoon = false;
@@ -479,6 +485,7 @@ window.onload = function() {
             yd = moonH * -0.5;
 
             //cc.globalAlpha = 0.1; // test
+            cc.globalAlpha = moonAlpha;
             cc.translate(x, y);
             //cc.rotate(rot * Math.PI / 180);
             cc.rotate(rot);
