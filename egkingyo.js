@@ -252,7 +252,7 @@ window.onload = function() {
             if (nowMoon < 0) {
                 nowMoon += 1440; // 24時間
             }
-//            nowMoon = 360; // debug
+//            nowMoon = 360; // debug alway
         }
         else {
             isMoon = false;
