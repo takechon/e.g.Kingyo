@@ -242,7 +242,7 @@ window.onload = function() {
             moonAge += 2;
             moonAge %= 30;
         }
-        if (DD.getHours() >= 17 || DD.getHours() < 8) {
+//        if (DD.getHours() >= 17 || DD.getHours() < 8) {
             isMoon = true;
             moonW = screen_unit * 0.35;
             moonH = screen_unit * 0.35;
@@ -253,11 +253,11 @@ window.onload = function() {
                 nowMoon += 1440; // 24時間
             }
 //            nowMoon = 360; // debug alway
-        }
-        else {
-            isMoon = false;
-            isMoon = true; // always show Moon
-        }
+//        }
+//        else {
+//            isMoon = false;
+//            isMoon = true; // always show Moon
+//        }
 
         // 水
         red = calcColor(h, 0xcd, 0);
