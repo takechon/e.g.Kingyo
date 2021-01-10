@@ -238,7 +238,7 @@ window.onload = function() {
 
         moonAge = (((DD.getFullYear() - 2009) % 19) * 11 +
                    (DD.getMonth() + 1) + DD.getDate()) % 30;
-        if (DD.getMonth() == 1 || DD.getMonth() == 2) {
+        if (DD.getMonth() == 0 || DD.getMonth() == 1) { // Jan or Feb
             moonAge += 2;
             moonAge %= 30;
         }
