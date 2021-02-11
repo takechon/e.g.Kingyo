@@ -88,6 +88,11 @@ var moonW;
 var moonH;
 var moonAlpha;
 
+var WeatherRequest = new XMLHttpRequest();
+var WeatherConditionCode = 0;
+var WeatherLastCheckTime = 0;
+var TempHosei = 1.0;
+
 var isHanabi = false;
 var hanabi;
 var hanabiCt = 0;
@@ -236,9 +241,14 @@ window.onload = function() {
             moonAlpha = 1.0;
         }
 
+        var m_key = DD.getMinutes();
+        var key = DD.getHours() * 60 + m_key;
+        if (WeatherConditionCode == 0 || m_key == 10) { // 一時間毎に天気情報取得
+            getWeather(key);
+        }
         moonAge = (((DD.getFullYear() - 2009) % 19) * 11 +
                    (DD.getMonth() + 1) + DD.getDate()) % 30;
-        if (DD.getMonth() == 0 || DD.getMonth() == 1) { // Jan or Feb
+        if (DD.getMonth() == 0 || DD.getMonth() == 1) { // 1, 2月の補正
             moonAge += 2;
             moonAge %= 30;
         }
@@ -635,6 +645,9 @@ window.onload = function() {
                     );
         cc.globalAlpha = 1.0;
 
+        // 天候描画
+        drawWeather();
+
         // 金魚ちゃん描画
         if (fishLoaded) {
             cc.save();
@@ -723,25 +736,29 @@ window.onload = function() {
         cc.strokeStyle = 'rgb(0, 136, 0)';
         cc.lineWidth = calcUnit(2);
         for (i = 0; i < PLANT_NUM / 2; i++) {
+            px_h = px[i] * TempHosei;
+            py_h = py[i] * TempHosei;
             cc.beginPath();
             cc.moveTo(calcUnitX(px0), calcUnitY(py0));
             cc.bezierCurveTo(
-                calcUnitX(Math.floor(px0 + px[i] * 0.4)),
+                calcUnitX(Math.floor(px0 + px_h * 0.4)),
                 calcUnitY(py0),
-                calcUnitX(px0 + px[i]),
-                calcUnitY(Math.floor(py0 - py[i] * 0.4)),
-                calcUnitX(px0 + px[i]), calcUnitY(py0 - py[i]));
+                calcUnitX(px0 + px_h),
+                calcUnitY(Math.floor(py0 - py_h * 0.4)),
+                calcUnitX(px0 + px_h), calcUnitY(py0 - py_h));
             cc.stroke();
         }
         for (i = PLANT_NUM / 2; i < PLANT_NUM; i++) {
+            px_h = px[i] * TempHosei;
+            py_h = py[i] * TempHosei;
             cc.beginPath();
             cc.moveTo(calcUnitX(px0), calcUnitY(py0));
             cc.bezierCurveTo(
-                calcUnitX(Math.floor(px0 - px[i] * 0.4)),
+                calcUnitX(Math.floor(px0 - px_h * 0.4)),
                 calcUnitY(py0),
-                calcUnitX(px0 - px[i]),
-                calcUnitY(Math.floor(py0 - py[i] * 0.4)),
-                calcUnitX(px0 - px[i]), calcUnitY(py0 - py[i]));
+                calcUnitX(px0 - px_h),
+                calcUnitY(Math.floor(py0 - py_h * 0.4)),
+                calcUnitX(px0 - px_h), calcUnitY(py0 - py_h));
             cc.stroke();
         }
         // 水草 move
@@ -768,6 +785,223 @@ window.onload = function() {
 
     loop();
 };
+
+function getWeather(time) {
+    //openweathermap（天気予報API）に接続
+    var cityName = 'tokyo';
+    var owmApiKey = 'b41764d5d4dcaae1ce1a71d25b89e9c7';
+    var owmURL = 'http://api.openweathermap.org/data/2.5/weather?q=' +
+        cityName + '&APPID=' + owmApiKey + '&units=metric';
+
+    if (time != WeatherLastCheckTime) {
+        WeatherRequest.open('GET', owmURL, true);
+        //結果をjson型で受け取る
+        WeatherRequest.responseType = 'json';
+        WeatherRequest.send();
+        WeatherLastCheckTime = time;
+    }
+
+    WeatherRequest.onreadystatechange = function() {
+        // 通信完了
+        if (WeatherRequest.readyState == 4) {
+            var data = this.response;
+
+            WeatherConditionCode = data['weather'][0]['id'];
+            var temp = data['main']['feels_like'];
+            //var t_min = data['main']['temp_min'];
+            //var t_max = data['main']['temp_max'];
+            var t_min = 5.0;
+            var t_max = 30.0;
+
+            //temp = 35; // debug
+
+            if (t_max != t_min) {
+                TempHosei = ((1.1 * (temp - t_min)) / (t_max - t_min)) + 0.1;
+            }
+            else {
+                TempHosei = 0;
+            }
+
+            if (TempHosei < 0.1) {
+                TempHosei = 0.1;
+            }
+            else if (TempHosei > 1.2) {
+                TempHosei = 1.2;
+            }
+
+            console.log('code = ' + WeatherConditionCode);
+            console.log('temp = ' + data['main']['temp']);
+            console.log('feels_temp = ' + temp);
+            console.log('temp_min = ' + t_min);
+            console.log('temp_max = ' + t_max);
+            console.log('TempHosei = ' + TempHosei);
+        }
+    };
+}
+
+function drawWeather() {
+    //WeatherConditionCode = 230; // deBug
+
+    var wgroup = Math.floor(WeatherConditionCode / 100);
+
+    cc.save();
+    switch (wgroup) {
+    case 2: // Thunderstorm
+        drawThnderstorm(WeatherConditionCode);
+        break;
+    case 3: // Drizzle
+        drawDrizzle(WeatherConditionCode);
+        break;
+    case 5: // Rain
+        drawRain(WeatherConditionCode);
+        break;
+    case 6: // Snow
+        drawSnow(WeatherConditionCode);
+        break;
+    case 7: // Atmosphere
+        break;
+    case 8: // Clear & Clouds
+        break;
+    }
+    cc.restore();
+}
+
+function drawThnderstorm(code) {
+    var vol;
+    vol = (code % 10) * 10 + 10;
+    switch (code) {
+    case 200: // Thunderstorm thunderstorm with light rain (11d)
+    case 201: // Thunderstorm thunderstorm with rain (11d)
+    case 202: // Thunderstorm thunderstorm with heavy rain (11d)
+        drawRain(code + 300);
+        break;
+    case 210: // Thunderstorm light thunderstorm (11d)
+    case 211: // Thunderstorm thunderstorm (11d)
+    case 212: // Thunderstorm heavy thunderstorm (11d)
+    case 221: // Thunderstorm ragged thunderstorm (11d)
+        break;
+    case 230: // Thunderstorm thunderstorm with light drizzle (11d)
+    case 231: // Thunderstorm thunderstorm with drizzle (11d)
+    case 232: // Thunderstorm thunderstorm with heavy drizzle (11d)
+        drawDrizzle(code + 100);
+        break;
+    }
+
+    if (Math.random() * 100 < vol) {
+        cc.fillStyle = 'rgb(255, 255, 255)';
+        cc.fillRect(0, 0, canvas.width, canvas.height);
+    }
+}
+
+function drawDrizzle(code) {
+    var sx, sy;
+    var st; // 角度
+    var sl; // 長さ
+    var vol;
+
+    cc.strokeStyle = 'rgb(255, 255, 255)';
+    cc.lineWidth = calcUnit(1);
+
+    vol = (code % 10) * 20 + 10;
+    st = (code % 10) * 6 + 93;
+    st = (st * Math.PI) / 180; // ラジアンにする!
+
+//case 300: // Drizzle light intensity drizzle (09d)
+//case 301: // Drizzle drizzle (09d)
+//case 302: // Drizzle heavy intensity drizzle (09d)
+//case 310: // Drizzle light intensity drizzle rain (09d)
+//case 311: // Drizzle drizzle rain (09d)
+//case 312: // Drizzle heavy intensity drizzle rain (09d)
+//case 313: // Drizzle shower rain and drizzle (09d)
+//case 314: // Drizzle heavy shower rain and drizzle (09d)
+//case 321: // Drizzle shower drizzle (09d)
+
+    cc.strokeStyle = 'rgb(128, 128, 128)';
+    for (i = vol; i > 0; i--) {
+        sx = Math.floor(Math.random() * canvas.width);
+        sy = Math.floor(Math.random() * canvas.height);
+        sl = Math.floor(Math.random() * calcUnit(UNIT));
+        cc.beginPath();
+        cc.moveTo(sx, sy);
+        cc.lineTo(sx + sl * Math.cos(st), sy - sl * Math.sin(st));
+        cc.stroke();
+    }
+}
+function drawRain(code) {
+    var sx, sy;
+    var st; // 角度
+    var sl; // 長さ
+    var vol;
+
+    cc.strokeStyle = 'rgb(255, 255, 255)';
+    cc.lineWidth = calcUnit(1);
+
+    vol = (code % 10) * 20 + 10;
+    st = (code % 10) * 6 + 93;
+    st = (st * Math.PI) / 180; // ラジアンにする!
+
+    switch (code) {
+    case 511: // Rain freezing rain (13d)
+        drawSnow(600);
+        break;
+    case 500: // Rain light rain (10d)
+    case 501: // Rain moderate rain (10d)
+    case 502: // Rain heavy intensity rain (10d)
+    case 503: // Rain very heavy rain (10d)
+    case 504: // Rain extreme rain (10d)
+        cc.strokeStyle = 'rgb(255, 255, 255)';
+        break;
+    case 520: // Rain light intensity shower rain (09d)
+    case 521: // Rain shower rain (09d)
+    case 522: // Rain heavy intensity shower rain (09d)
+    case 531: // Rain ragged shower rain (09d)
+        cc.strokeStyle = 'rgb(128, 128, 128)';
+        break;
+    }
+    for (i = vol; i > 0; i--) {
+        sx = Math.floor(Math.random() * canvas.width);
+        sy = Math.floor(Math.random() * canvas.height);
+        sl = Math.floor(Math.random() * calcUnit(UNIT));
+        cc.beginPath();
+        cc.moveTo(sx, sy);
+        cc.lineTo(sx + sl * Math.cos(st), sy - sl * Math.sin(st));
+        cc.stroke();
+    }
+}
+function drawSnow(code) {
+    var sx, sy, sr;
+    var vol = 50; // 雪の量
+    cc.fillStyle = 'rgb(255, 255, 255)';
+
+    switch (code) {
+    case 600: // Snow light snow (13d)
+    case 612: // Snow Light shower sleet (13d)
+    case 615: // Snow Light rain and snow (13d)
+    case 620: // Snow Light shower snow (13d)
+        vol = 50;
+        break;
+    case 601: // Snow Snow (13d)
+    case 611: // Snow Sleet (13d)
+    case 621: // Snow Shower snow (13d)
+    case 613: // Snow Shower sleet (13d)
+        vol = 100;
+        break;
+    case 602: // Snow Heavy snow (13d)
+    case 616: // Snow Rain and snow (13d)
+    case 622: // Snow Heavy shower snow (13d)
+        vol = 200;
+        break;
+    }
+
+    for (i = vol; i > 0; i--) {
+        sx = Math.floor(Math.random() * canvas.width);
+        sy = Math.floor(Math.random() * canvas.height);
+        sr = Math.floor(Math.random() * calcUnit(5) + calcUnit(1));
+        cc.beginPath();
+        cc.arc(sx, sy, sr, 0, Math.PI * 2, false);
+        cc.fill();
+    }
+}
 
 function initChime() {
     if (monthDay == 1103) { // ブルーインパルス
@@ -1110,6 +1344,10 @@ function mouseupfunc(event) {
     var y = event.clientY - rect.top;
 
     if (!feeding) {
+        var DD = new Date();
+        var key = DD.getHours() * 60 + DD.getMinutes();
+        getWeather(key);
+
         for (i = 0; i < FOOD_NUM; i++) {
             //foodx[i] = x;
             foodx[i] = x * 256 / canvas.width;
@@ -1244,6 +1482,7 @@ function moveFish() {
     var today = new Date();
     NowTime = today.getTime();
 
+/*
     if (NowTime - LastFoodTime > DEAD_TIME + (Age - 4) * 3600000) { // 餓死
         //if(NowTime - LastFoodTime > 5000) { // debug
         BirthTime = NowTime;
@@ -1254,7 +1493,7 @@ function moveFish() {
         //window.alert("きんぎょは寂しさと空腹で泣いています。このままだと愛を求める旅に出てしまいますよ。");
         loadFish();
     }
-
+*/
     if (feeding && HungryTime < NowTime) { // エサ
         eatfood();
     }
