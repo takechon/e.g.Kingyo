@@ -789,7 +789,7 @@ window.onload = function() {
 function getWeather(time) {
     //openweathermap（天気予報API）に接続
     var cityName = 'tokyo';
-    var owmApiKey = 'b41764d5d4dcaae1ce1a71d25b89e9c7';
+    var owmApiKey = 'APIKEY';
     var owmURL = 'http://api.openweathermap.org/data/2.5/weather?q=' +
         cityName + '&APPID=' + owmApiKey + '&units=metric';
 
